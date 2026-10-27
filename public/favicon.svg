@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="OceanDrift">
+  <rect width="64" height="64" rx="8" fill="#063849"/>
+  <path d="M8 40c6 0 6-6 12-6s6 6 12 6 6-6 12-6 6 6 12 6" fill="none" stroke="#7ec8db" stroke-width="3" stroke-linecap="round"/>
+  <path d="M8 50c6 0 6-6 12-6s6 6 12 6 6-6 12-6 6 6 12 6" fill="none" stroke="#3a8fa8" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="44" cy="22" r="5" fill="#d9c4a5"/>
+</svg>
