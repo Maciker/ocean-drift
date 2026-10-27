@@ -3,11 +3,13 @@
   "entry": [
     "tools/**/*.mjs",
     "scripts/**/*.mjs",
-    "test/**/*.test.ts"
+    "test/**/*.test.ts",
+    "src/worker/driftWorker.ts"
   ],
   "project": [
     "src/**/*.{ts,tsx}",
     "tools/**/*.mjs",
     "scripts/**/*.mjs"
-  ]
+  ],
+  "ignoreExportsUsedInFile": true
 }
