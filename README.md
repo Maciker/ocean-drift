@@ -15,13 +15,14 @@ Exploratory map for floating-debris surface drift in a Mediterranean region, dri
 - React + Vite + TypeScript (strict)
 - MapLibre GL JS (MapLibre demotiles basemap — no API key)
 - Agent workflow from [`agent-workflow-code-ts`](https://github.com/Maciker/agent-workflow-code-ts) (pinned in `docs/workflow-provenance.json`)
-- Planned: Web Worker drift engine, preloaded Copernicus fixtures
+- Synthetic current-field fixture for engine wiring; real Copernicus fetch blocked without private credentials ([docs/data-pipeline.md](docs/data-pipeline.md))
 
 ## Setup
 
 ```bash
 pnpm install
 pnpm setup:hooks   # optional local git hooks
+pnpm data:generate-synthetic
 pnpm dev
 ```
 
@@ -37,6 +38,8 @@ pnpm quality:full      # + arch, knip, jscpd, ratchet
 pnpm ai:sync           # regenerate vendor adapters from .ai/
 pnpm vendors:check
 pnpm dogfood:check
+pnpm data:fetch-episode   # requires private Copernicus credentials
+pnpm data:build-fixture   # after a successful fetch
 ```
 
 ## Layout

@@ -1,0 +1,10 @@
+{
+  "status": "blocked",
+  "reason": "missing_copernicus_credentials",
+  "requiredEnv": [
+    "COPERNICUSMARINE_SERVICE_USERNAME",
+    "COPERNICUSMARINE_SERVICE_PASSWORD"
+  ],
+  "nextStep": "Set credentials in a private shell, then re-run pnpm data:fetch-episode",
+  "docs": "docs/data-pipeline.md"
+}
