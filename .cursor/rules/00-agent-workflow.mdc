@@ -1,0 +1,30 @@
+---
+description: "Repository-wide agent workflow: discovery, plan, approval, TDD execution, review, and quality gates."
+alwaysApply: true
+---
+
+# Agent workflow
+
+Follow the repository contract in AGENTS.md. The canonical source is .ai/.
+
+## Required flow
+
+1. Discovery before solution design when the request is ambiguous.
+2. Plan before implementation.
+3. Human approval before executor changes production code.
+4. TDD for behavior changes.
+5. Review after implementation.
+6. Run deterministic quality gates.
+7. Before opening a PR for agent-generated changes, invoke qa-cross-model with a clean context and run the pre-PR gate (pnpm prepr:gate).
+8. After creating a PR, invoke the portable post-PR review command, inspect the complete diff/checks/comments/reviews and run pnpm pr:review against the exact PR base/head SHA.
+9. Do not open or merge a PR if exact-SHA evidence is missing, or if post-PR review is PENDING, BLOCKED or CHANGES_REQUESTED.
+
+## Guardrails
+
+- Do not implement ambiguous work. Ask one material question or create a discovery artifact.
+- Review agents are read-only. They produce findings, not fixes.
+- qa-cross-model is read-only and must not edit files.
+- Executor is the only agent allowed to apply implementation changes.
+- Do not open a PR until pnpm prepr:gate passes.
+- Never grow quality baselines automatically.
+- Prefer small vertical slices over broad edits.

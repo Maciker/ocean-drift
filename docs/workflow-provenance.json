@@ -1,0 +1,38 @@
+{
+  "repository": "https://github.com/Maciker/agent-workflow-code-ts",
+  "commit": "dc22a2c42c360b0c9bd3433b2e5c31798ee24ab3",
+  "syncedOn": "2026-10-28",
+  "workflowVersion": "0.8.0",
+  "canonicalPath": ".ai",
+  "imported": [
+    ".ai",
+    "tools",
+    "quality",
+    "scripts",
+    ".githooks",
+    "docs (workflow docs; OceanDrift hackathon.md and product-brief.md preserved)",
+    "examples",
+    "licenses",
+    "THIRD_PARTY_NOTICES.md",
+    "test/vendor-sync.test.ts",
+    "test/pre-pr-workflow.test.ts",
+    "test/post-pr-review.test.ts",
+    "test/qa-gates.test.ts"
+  ],
+  "adaptations": [
+    "React+Vite app under src/ (domain, data, ui, worker) instead of workflow sample src/index.ts",
+    "package.json merges app scripts with workflow quality/vendor/qa gates",
+    "dogfood-check adapted for OceanDrift private app + workflow-provenance",
+    "knip/eslint/tsconfig cover TSX app and workflow tools/tests",
+    "AGENTS.md OceanDrift project contract and skill exclusions (Swift/Expo)",
+    "Generated adapters regenerated via pnpm ai:sync (not copied)",
+    "QA git helpers disable host gpgsign/fsmonitor to keep gate tests deterministic"
+  ],
+  "skills": "Full canonical .ai/skills catalog from source commit, including Matt/Emil packs. Exclusions are load-time only (documented in AGENTS.md).",
+  "integration": {
+    "identityEvidence": ["declared", "harness"],
+    "blockingFindings": "all severities block",
+    "preserved": "OceanDrift README, MIT LICENSE, hackathon/product docs, MapLibre app, .env.example app notes",
+    "qaStatus": "pending independent cross-model review; no fabricated model evidence"
+  }
+}
