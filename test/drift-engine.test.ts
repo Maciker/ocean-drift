@@ -132,15 +132,16 @@ describe('runDrift', () => {
 
   it('strands on land instead of crossing silently', () => {
     const lon = [3, 4]
-    const lat = [42.5, 43.0, 43.5]
-    const timesUtc = ['2024-09-01T00:00:00.000Z', '2024-09-01T06:00:00.000Z']
+    const lat = [42.8, 43.0, 43.2]
+    const timesUtc = ['2024-09-01T00:00:00.000Z', '2024-09-01T03:00:00.000Z']
     const field: CurrentField = {
       timesUtc,
       lon,
       lat,
       u: timesUtc.map(() => lat.map(() => lon.map(() => 0))),
+      // Open water south of 43.15; land (null) at the northern row.
       v: timesUtc.map(() =>
-        lat.map((y) => lon.map(() => (y >= 43.4 ? null : 0.8))),
+        lat.map((y) => lon.map(() => (y >= 43.15 ? null : 2.0))),
       ),
     }
     const manifest: EpisodeManifest = {
@@ -149,10 +150,10 @@ describe('runDrift', () => {
       productId: 'SYNTHETIC',
       datasetId: 'land-wall',
       regionLabel: 'land-wall',
-      bbox: { west: 3, east: 4, south: 42.5, north: 43.5 },
+      bbox: { west: 3, east: 4, south: 42.8, north: 43.2 },
       startUtc: timesUtc[0]!,
       endUtc: timesUtc[1]!,
-      stepHours: 6,
+      stepHours: 3,
       depthLabel: 'surface',
       units: 'm/s',
       uvConvention: 'oceanographic-east-north',
@@ -166,18 +167,18 @@ describe('runDrift', () => {
     const result = runDrift({
       field,
       manifest,
-      origin: { lon: 3.5, lat: 42.6 },
+      origin: { lon: 3.5, lat: 42.85 },
       startUtc: timesUtc[0]!,
-      horizonHours: 6,
+      horizonHours: 3,
       particleCount: 1,
-      dtSeconds: 1800,
+      dtSeconds: 600,
       integrator: 'euler',
       seed: 1,
       dispersionMps: 0,
     })
     const particle = result.particles[0]!
     expect(particle.status).toBe('stranded_land')
-    expect(particle.lat).toBeLessThan(43.5)
+    expect(particle.lat).toBeLessThan(43.2)
   })
 
   it('reproduces dispersed runs with the same seed', () => {
