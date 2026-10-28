@@ -39,6 +39,8 @@ Fill when a real preview/production URL exists:
 
 | Field | Value |
 | --- | --- |
-| SHA | _pending_ |
-| Preview / prod URL | _pending_ |
-| Visibility | _pending_ |
+| SHA | `de8eeb6` (hosting config commit; update after merge) |
+| Preview / prod URL | _blocked — Vercel project create returned 403 for the agent token; Iker must create/link `ocean-drift` under team `macikers-projects` and paste the URL_ |
+| Visibility | Confirm Deployment Protection before sharing publicly |
+
+Local verification already done: `pnpm build` succeeds; SPA assets land in `dist/`.
