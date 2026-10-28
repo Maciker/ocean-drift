@@ -7,47 +7,61 @@ Exploratory map for floating-debris surface drift in a Mediterranean region, dri
 | Linear project | [OceanDrift — Copernicus Marine](https://linear.app/maciker/project/oceandrift-copernicus-marine-8a30dc28bd9c) |
 | Hackathon notes | [docs/hackathon.md](docs/hackathon.md) |
 | Product brief | [docs/product-brief.md](docs/product-brief.md) |
+| Workflow integration | [docs/workflow-integration.md](docs/workflow-integration.md) |
 
 ## Stack
 
 - Node **22+**, **pnpm** (see `packageManager` in `package.json`)
 - React + Vite + TypeScript (strict)
 - MapLibre GL JS (MapLibre demotiles basemap — no API key)
-- Planned: Web Worker drift engine, preloaded Copernicus fixtures
+- Agent workflow from [`agent-workflow-code-ts`](https://github.com/Maciker/agent-workflow-code-ts) (pinned in `docs/workflow-provenance.json`)
+- Synthetic current-field fixture for engine wiring; real Copernicus fetch blocked without private credentials ([docs/data-pipeline.md](docs/data-pipeline.md))
 
 ## Setup
 
 ```bash
 pnpm install
+pnpm setup:hooks   # optional local git hooks
+pnpm data:generate-synthetic
 pnpm dev
 ```
 
-Other scripts:
+## Scripts
 
 ```bash
 pnpm typecheck
-pnpm build
-pnpm preview
 pnpm lint
+pnpm test
+pnpm build
+pnpm quality:fast      # typecheck + lint + test
+pnpm quality:full      # + arch, knip, jscpd, ratchet
+pnpm ai:sync           # regenerate vendor adapters from .ai/
+pnpm vendors:check
+pnpm dogfood:check
+pnpm data:fetch-episode   # requires private Copernicus credentials
+pnpm data:build-fixture   # after a successful fetch
 ```
 
 ## Layout
 
 ```text
+.ai/            canonical agent workflow (do not hand-edit vendor projections)
 src/
-  domain/   # shared types and map defaults
-  data/     # episode fixtures (later)
-  ui/       # React app and MapLibre view
-  worker/   # drift simulation worker (later)
-docs/       # hackathon gate + product brief
+  domain/       shared types and map defaults
+  data/         episode fixtures (later)
+  ui/           React app and MapLibre view
+  worker/       drift simulation worker (later)
+tools/          quality, vendor sync, QA harness
+docs/           product + workflow docs
 ```
 
 ## Licence and attribution
 
 - Application code: [MIT](./LICENSE)
-- Ocean data: use under the [Copernicus Marine Service licence](https://marine.copernicus.eu/user-corner/service-commitments-and-licence); credit required
+- Workflow third-party notices: [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md)
+- Ocean data: [Copernicus Marine Service licence](https://marine.copernicus.eu/user-corner/service-commitments-and-licence); credit required
 - Basemap: [MapLibre demotiles](https://demotiles.maplibre.org/)
 
 ## Visibility
 
-Repository `Maciker/ocean-drift` is **public** (confirmed via GitHub API on 28 Oct 2026). No secrets in the repo; see `.env.example`.
+Repository `Maciker/ocean-drift` is **public**. No secrets in the repo; see `.env.example`.

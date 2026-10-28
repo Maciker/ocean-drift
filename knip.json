@@ -1,0 +1,15 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "tools/**/*.mjs",
+    "scripts/**/*.mjs",
+    "test/**/*.test.ts",
+    "src/worker/driftWorker.ts"
+  ],
+  "project": [
+    "src/**/*.{ts,tsx}",
+    "tools/**/*.mjs",
+    "scripts/**/*.mjs"
+  ],
+  "ignoreExportsUsedInFile": true
+}
