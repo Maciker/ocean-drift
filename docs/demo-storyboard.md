@@ -10,8 +10,9 @@ UI language: **English**. Map is the protagonist.
 | 2. Incident (20 s) | Click sea for origin; set horizon 48 h | Origin marker appears; land clicks rejected |
 | 3. Drift (40 s) | Play | Particles/trails advance with UTC scrubber |
 | 4. Sensitivity (25 s) | Compare: Origin Δ / Start Δ / Dispersion | Dual trails (base seafoam, variant amber) + endpoint Δ summary — labeled sensitivity, not probability |
-| 5. Exposure (15 s) | Provenance + legend | Dataset kind, hash, limitations |
-| 6. Limits (15 s) | Footer credit | Copernicus / synthetic label; no calibrated probabilities |
+| 5. Exposure (20 s) | Ranked watch zones + map polygons | Inside / near / none; illustrative demo zones only |
+| 6. Export (15 s) | JSON + HTML summary | Hash, params, exposure, limitations — deterministic |
+| 7. Limits (10 s) | Footer credit | Copernicus / synthetic label; no calibrated probabilities |
 
 ## Layout
 

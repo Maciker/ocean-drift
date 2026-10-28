@@ -1,6 +1,7 @@
 import type { EpisodeManifest } from '../domain/currentField.ts'
 import type { HorizonHours } from '../domain/playback.ts'
 import type { DriftRunResult } from '../domain/driftEngine.ts'
+import type { ExposureReport } from '../domain/exposure.ts'
 import type { CompareMode, CompareSummary } from '../domain/scenarioCompare.ts'
 import { SENSITIVITY_DISCLAIMER } from '../domain/scenarioCompare.ts'
 
@@ -20,6 +21,7 @@ type Props = {
   errorMessage: string | null
   result: DriftRunResult | null
   compareSummary: CompareSummary | null
+  exposureReport: ExposureReport | null
   reducedMotion: boolean
   onHorizonChange: (horizon: HorizonHours) => void
   onStartUtcChange: (value: string) => void
@@ -30,6 +32,8 @@ type Props = {
   onScrub: (index: number) => void
   onClearOrigin: () => void
   onClearCompare: () => void
+  onExportJson: () => void
+  onExportHtml: () => void
 }
 
 export function ControlPanel(props: Props) {
@@ -197,6 +201,58 @@ export function ControlPanel(props: Props) {
         </div>
       ) : null}
 
+      {props.exposureReport ? (
+        <div className="panel-section exposure-summary">
+          <h2>Exposure ranking</h2>
+          <p className="hint">{props.exposureReport.disclaimer}</p>
+          <ol className="exposure-list">
+            {props.exposureReport.zones.map((zone) => (
+              <li key={zone.zoneId}>
+                <span className="exposure-name">{zone.name}</span>
+                <span className={`exposure-contact exposure-contact--${zone.contact}`}>
+                  {zone.contact}
+                </span>
+                <span className="hint">
+                  inside {zone.particlesInside} · near {zone.particlesNearOnly}
+                  {Number.isFinite(zone.minDistanceKm)
+                    ? ` · min ${formatKm(zone.minDistanceKm)}`
+                    : ''}
+                </span>
+              </li>
+            ))}
+          </ol>
+          <p className="hint">
+            Out of domain: {props.exposureReport.outOfDomainParticles}.{' '}
+            {props.exposureReport.provenanceNote}
+          </p>
+        </div>
+      ) : null}
+
+      <div className="panel-section">
+        <h2>Export</h2>
+        <div className="btn-row">
+          <button
+            type="button"
+            className="btn"
+            onClick={props.onExportJson}
+            disabled={!props.result || props.busy}
+          >
+            JSON
+          </button>
+          <button
+            type="button"
+            className="btn"
+            onClick={props.onExportHtml}
+            disabled={!props.result || props.busy}
+          >
+            HTML summary
+          </button>
+        </div>
+        <p className="hint">
+          Deterministic export of parameters, hash, compare, and exposure — no invented metrics.
+        </p>
+      </div>
+
       {props.statusMessage ? (
         <p className="status" role="status">
           {props.statusMessage}
@@ -213,6 +269,9 @@ export function ControlPanel(props: Props) {
         <ul>
           <li>
             <span className="swatch swatch-origin" /> Origin
+          </li>
+          <li>
+            <span className="swatch swatch-zone" /> Watch / demo zone
           </li>
           <li>
             <span className="swatch swatch-trail" /> Base trajectory
@@ -272,6 +331,13 @@ function formatMeters(meters: number): string {
     return `${(meters / 1000).toFixed(1)} km`
   }
   return `${Math.round(meters)} m`
+}
+
+function formatKm(km: number): string {
+  if (km < 1) {
+    return `${Math.round(km * 1000)} m`
+  }
+  return `${km.toFixed(1)} km`
 }
 
 function toLocalInputValue(iso: string): string {

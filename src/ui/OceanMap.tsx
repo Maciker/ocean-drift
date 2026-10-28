@@ -21,6 +21,7 @@ type Props = {
   particles: GeoJSON.FeatureCollection
   variantTrails: GeoJSON.FeatureCollection
   variantParticles: GeoJSON.FeatureCollection
+  exposureZones: GeoJSON.FeatureCollection
   onMapClick: (lon: number, lat: number) => void
 }
 
@@ -32,6 +33,7 @@ export function OceanMap({
   particles,
   variantTrails,
   variantParticles,
+  exposureZones,
   onMapClick,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -62,6 +64,28 @@ export function OceanMap({
     mapRef.current = map
 
     const ensureLayers = () => {
+      if (!map.getSource('exposure-zones')) {
+        map.addSource('exposure-zones', { type: 'geojson', data: EMPTY })
+        map.addLayer({
+          id: 'exposure-zones-fill',
+          type: 'fill',
+          source: 'exposure-zones',
+          paint: {
+            'fill-color': '#2a7a6a',
+            'fill-opacity': 0.18,
+          },
+        })
+        map.addLayer({
+          id: 'exposure-zones-outline',
+          type: 'line',
+          source: 'exposure-zones',
+          paint: {
+            'line-color': '#7dccb8',
+            'line-width': 1.2,
+            'line-opacity': 0.9,
+          },
+        })
+      }
       if (!map.getSource('variant-trails')) {
         map.addSource('variant-trails', { type: 'geojson', data: EMPTY })
         map.addLayer({
@@ -172,6 +196,15 @@ export function OceanMap({
       mapRef.current = null
     }
   }, [])
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || status !== 'ready') {
+      return
+    }
+    const zonesSource = map.getSource('exposure-zones') as GeoJSONSource | undefined
+    zonesSource?.setData(exposureZones)
+  }, [exposureZones, status])
 
   useEffect(() => {
     const map = mapRef.current

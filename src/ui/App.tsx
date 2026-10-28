@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { loadDemoExposureZones } from '../data/loadExposureZones.ts'
 import { loadSyntheticEpisode } from '../data/loadEpisode.ts'
 import type { DriftRunRequest, DriftRunResult } from '../domain/driftEngine.ts'
+import {
+  type ExposureReport,
+  scoreExposure,
+} from '../domain/exposure.ts'
+import { buildRunExport, renderExportHtml } from '../domain/exportSummary.ts'
 import {
   DEMO_PARTICLE_COUNT,
   buildTimeline,
@@ -37,6 +43,7 @@ function prefersReducedMotion(): boolean {
 
 export function App() {
   const episode = useMemo(() => loadSyntheticEpisode(), [])
+  const exposureBundle = useMemo(() => loadDemoExposureZones(), [])
   const { run, cancel } = useDriftWorker()
 
   const [origin, setOrigin] = useState<{ lon: number; lat: number } | null>(null)
@@ -48,6 +55,7 @@ export function App() {
   const [result, setResult] = useState<DriftRunResult | null>(null)
   const [variantResult, setVariantResult] = useState<DriftRunResult | null>(null)
   const [compareSummary, setCompareSummary] = useState<CompareSummary | null>(null)
+  const [exposureReport, setExposureReport] = useState<ExposureReport | null>(null)
   const [scrubIndex, setScrubIndex] = useState(0)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [statusMessage, setStatusMessage] = useState<string | null>(
@@ -95,8 +103,70 @@ export function App() {
     setResult(null)
     setVariantResult(null)
     setCompareSummary(null)
+    setExposureReport(null)
     setPlaying(false)
     setScrubIndex(0)
+  }
+
+  const applyExposure = (drift: DriftRunResult) => {
+    setExposureReport(
+      scoreExposure(
+        drift,
+        exposureBundle.zones,
+        horizon,
+        exposureBundle.provenanceNote,
+      ),
+    )
+  }
+
+  const downloadText = (filename: string, contents: string, mime: string) => {
+    const blob = new Blob([contents], { type: mime })
+    const url = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = filename
+    anchor.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const onExportJson = () => {
+    if (!result || !origin) {
+      return
+    }
+    const payload = buildRunExport({
+      manifest: episode.manifest,
+      result,
+      origin,
+      startUtc,
+      horizonHours: horizon,
+      compare: compareSummary,
+      exposure: exposureReport,
+    })
+    downloadText(
+      `oceandrift-run-${payload.generatedAtUtc.slice(0, 19).replaceAll(':', '')}.json`,
+      `${JSON.stringify(payload, null, 2)}\n`,
+      'application/json',
+    )
+  }
+
+  const onExportHtml = () => {
+    if (!result || !origin) {
+      return
+    }
+    const payload = buildRunExport({
+      manifest: episode.manifest,
+      result,
+      origin,
+      startUtc,
+      horizonHours: horizon,
+      compare: compareSummary,
+      exposure: exposureReport,
+    })
+    downloadText(
+      `oceandrift-run-${payload.generatedAtUtc.slice(0, 19).replaceAll(':', '')}.html`,
+      renderExportHtml(payload),
+      'text/html',
+    )
   }
 
   const onMapClick = useCallback(
@@ -216,6 +286,7 @@ export function App() {
     setErrorMessage(null)
     setVariantResult(null)
     setCompareSummary(null)
+    setExposureReport(null)
     setStatusMessage(
       compareMode === 'off'
         ? 'Computing drift in worker…'
@@ -225,6 +296,7 @@ export function App() {
       if (compareMode === 'off') {
         const next = await run(baseRequest)
         setResult(next)
+        applyExposure(next)
         const endIndex = Math.max(buildTimeline(next).length - 1, 0)
         setScrubIndex(reducedMotion ? endIndex : 0)
         setStatusMessage(
@@ -242,6 +314,7 @@ export function App() {
         setResult(base)
         setVariantResult(variant)
         setCompareSummary(summarizeCompare(compareMode, base, variant))
+        applyExposure(base)
         const endIndex = Math.max(buildTimeline(base).length - 1, 0)
         setScrubIndex(reducedMotion ? endIndex : 0)
         setStatusMessage(
@@ -329,6 +402,7 @@ export function App() {
           errorMessage={errorMessage}
           result={result}
           compareSummary={compareSummary}
+          exposureReport={exposureReport}
           reducedMotion={reducedMotion}
           onHorizonChange={onHorizonChange}
           onStartUtcChange={onStartUtcChange}
@@ -357,6 +431,8 @@ export function App() {
             setCompareSummary(null)
             setStatusMessage('Compare cleared.')
           }}
+          onExportJson={onExportJson}
+          onExportHtml={onExportHtml}
         />
         <main className="map-stage">
           <OceanMap
@@ -365,6 +441,7 @@ export function App() {
             particles={particles}
             variantTrails={variantTrails}
             variantParticles={variantParticles}
+            exposureZones={exposureBundle.geoJson}
             onMapClick={onMapClick}
           />
         </main>
