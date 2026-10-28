@@ -9,6 +9,7 @@ Exploratory map for floating-debris surface drift in a Mediterranean region, dri
 | Product brief | [docs/product-brief.md](docs/product-brief.md) |
 | Demo storyboard | [docs/demo-storyboard.md](docs/demo-storyboard.md) |
 | Validation | [docs/validation.md](docs/validation.md) |
+| Hosting | [docs/hosting.md](docs/hosting.md) |
 | Workflow integration | [docs/workflow-integration.md](docs/workflow-integration.md) |
 
 ## Stack
