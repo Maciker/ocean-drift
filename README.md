@@ -7,6 +7,8 @@ Exploratory map for floating-debris surface drift in a Mediterranean region, dri
 | Linear project | [OceanDrift — Copernicus Marine](https://linear.app/maciker/project/oceandrift-copernicus-marine-8a30dc28bd9c) |
 | Hackathon notes | [docs/hackathon.md](docs/hackathon.md) |
 | Product brief | [docs/product-brief.md](docs/product-brief.md) |
+| Demo storyboard | [docs/demo-storyboard.md](docs/demo-storyboard.md) |
+| Validation | [docs/validation.md](docs/validation.md) |
 | Workflow integration | [docs/workflow-integration.md](docs/workflow-integration.md) |
 
 ## Stack
@@ -47,12 +49,12 @@ pnpm data:build-fixture   # after a successful fetch
 ```text
 .ai/            canonical agent workflow (do not hand-edit vendor projections)
 src/
-  domain/       shared types and map defaults
-  data/         episode fixtures (later)
-  ui/           React app and MapLibre view
-  worker/       drift simulation worker (later)
+  domain/       drift engine, playback, exposure, export
+  data/         synthetic episode + illustrative exposure zones
+  ui/           React app, controls, MapLibre view
+  worker/       drift Web Worker
 tools/          quality, vendor sync, QA harness
-docs/           product + workflow docs
+docs/           product, pipeline, validation, storyboard
 ```
 
 ## Licence and attribution
