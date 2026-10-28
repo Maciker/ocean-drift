@@ -10,7 +10,13 @@ Exploratory map for floating-debris surface drift in a Mediterranean region, dri
 | Demo storyboard | [docs/demo-storyboard.md](docs/demo-storyboard.md) |
 | Validation | [docs/validation.md](docs/validation.md) |
 | Hosting | [docs/hosting.md](docs/hosting.md) |
+| Pitch script | [docs/pitch-script.md](docs/pitch-script.md) |
+| Delivery checklist | [docs/delivery-checklist.md](docs/delivery-checklist.md) |
 | Workflow integration | [docs/workflow-integration.md](docs/workflow-integration.md) |
+
+## Architecture (brief)
+
+MapLibre map + English control panel → Web Worker drift engine (Euler/RK2) over a labeled current fixture → optional sensitivity compare → illustrative exposure ranking → deterministic JSON/HTML export. Static Vite build (`vercel.json`). See [docs/architecture.md](docs/architecture.md), [docs/drift-engine.md](docs/drift-engine.md), [docs/validation.md](docs/validation.md).
 
 ## Stack
 
