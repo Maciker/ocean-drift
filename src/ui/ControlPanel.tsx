@@ -1,12 +1,15 @@
 import type { EpisodeManifest } from '../domain/currentField.ts'
 import type { HorizonHours } from '../domain/playback.ts'
 import type { DriftRunResult } from '../domain/driftEngine.ts'
+import type { CompareMode, CompareSummary } from '../domain/scenarioCompare.ts'
+import { SENSITIVITY_DISCLAIMER } from '../domain/scenarioCompare.ts'
 
 type Props = {
   manifest: EpisodeManifest
   origin: { lon: number; lat: number } | null
   startUtc: string
   horizon: HorizonHours
+  compareMode: CompareMode
   coverageHint: string
   busy: boolean
   playing: boolean
@@ -16,18 +19,27 @@ type Props = {
   statusMessage: string | null
   errorMessage: string | null
   result: DriftRunResult | null
+  compareSummary: CompareSummary | null
   reducedMotion: boolean
   onHorizonChange: (horizon: HorizonHours) => void
   onStartUtcChange: (value: string) => void
+  onCompareModeChange: (mode: CompareMode) => void
   onRun: () => void
   onPlayPause: () => void
   onReset: () => void
   onScrub: (index: number) => void
   onClearOrigin: () => void
+  onClearCompare: () => void
 }
 
 export function ControlPanel(props: Props) {
   const horizons: HorizonHours[] = [24, 48, 72]
+  const compareModes: Array<{ id: CompareMode; label: string }> = [
+    { id: 'off', label: 'Off' },
+    { id: 'origin_offset', label: 'Origin Δ' },
+    { id: 'start_offset', label: 'Start Δ' },
+    { id: 'dispersion', label: 'Dispersion' },
+  ]
 
   return (
     <aside className="control-panel" aria-label="Simulation controls">
@@ -85,6 +97,35 @@ export function ControlPanel(props: Props) {
       </div>
 
       <div className="panel-section">
+        <h2>Compare (sensitivity)</h2>
+        <div className="btn-row" role="group" aria-label="Compare mode">
+          {compareModes.map((mode) => (
+            <button
+              key={mode.id}
+              type="button"
+              className={props.compareMode === mode.id ? 'btn btn-active' : 'btn'}
+              onClick={() => props.onCompareModeChange(mode.id)}
+              disabled={props.busy}
+              aria-pressed={props.compareMode === mode.id}
+            >
+              {mode.label}
+            </button>
+          ))}
+        </div>
+        <p className="hint">{SENSITIVITY_DISCLAIMER}</p>
+        {props.compareMode !== 'off' ? (
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={props.onClearCompare}
+            disabled={props.busy}
+          >
+            Clear compare
+          </button>
+        ) : null}
+      </div>
+
+      <div className="panel-section">
         <h2>Playback</h2>
         <div className="btn-row">
           <button
@@ -130,6 +171,32 @@ export function ControlPanel(props: Props) {
         ) : null}
       </div>
 
+      {props.compareSummary ? (
+        <div className="panel-section compare-summary">
+          <h2>Difference summary</h2>
+          <dl>
+            <div>
+              <dt>Mode</dt>
+              <dd>{props.compareSummary.mode.replace('_', ' ')}</dd>
+            </div>
+            <div>
+              <dt>Endpoint Δ</dt>
+              <dd className="mono">
+                {formatMeters(props.compareSummary.endpointSeparationM)}
+              </dd>
+            </div>
+            <div>
+              <dt>Still moving</dt>
+              <dd>
+                base {props.compareSummary.baseActiveCount} · variant{' '}
+                {props.compareSummary.variantActiveCount}
+              </dd>
+            </div>
+          </dl>
+          <p className="hint">{props.compareSummary.disclaimer}</p>
+        </div>
+      ) : null}
+
       {props.statusMessage ? (
         <p className="status" role="status">
           {props.statusMessage}
@@ -148,11 +215,21 @@ export function ControlPanel(props: Props) {
             <span className="swatch swatch-origin" /> Origin
           </li>
           <li>
-            <span className="swatch swatch-trail" /> Trajectory
+            <span className="swatch swatch-trail" /> Base trajectory
           </li>
           <li>
-            <span className="swatch swatch-particle" /> Particle
+            <span className="swatch swatch-particle" /> Base particle
           </li>
+          {props.compareMode !== 'off' ? (
+            <>
+              <li>
+                <span className="swatch swatch-trail-variant" /> Variant trajectory
+              </li>
+              <li>
+                <span className="swatch swatch-particle-variant" /> Variant particle
+              </li>
+            </>
+          ) : null}
         </ul>
         <p className="hint">
           Exploratory advection — not beach-level arrival and not calibrated
@@ -188,6 +265,13 @@ export function ControlPanel(props: Props) {
       </div>
     </aside>
   )
+}
+
+function formatMeters(meters: number): string {
+  if (meters >= 1000) {
+    return `${(meters / 1000).toFixed(1)} km`
+  }
+  return `${Math.round(meters)} m`
 }
 
 function toLocalInputValue(iso: string): string {

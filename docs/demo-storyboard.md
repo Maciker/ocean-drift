@@ -9,7 +9,7 @@ UI language: **English**. Map is the protagonist.
 | 1. Problem (15 s) | Map + synthetic banner + short lede | Read: exploratory surface advection, not a forecast |
 | 2. Incident (20 s) | Click sea for origin; set horizon 48 h | Origin marker appears; land clicks rejected |
 | 3. Drift (40 s) | Play | Particles/trails advance with UTC scrubber |
-| 4. Sensitivity (25 s) | Toggle compare offset (MAC-365) | Side-by-side / dual trails when available |
+| 4. Sensitivity (25 s) | Compare: Origin Δ / Start Δ / Dispersion | Dual trails (base seafoam, variant amber) + endpoint Δ summary — labeled sensitivity, not probability |
 | 5. Exposure (15 s) | Provenance + legend | Dataset kind, hash, limitations |
 | 6. Limits (15 s) | Footer credit | Copernicus / synthetic label; no calibrated probabilities |
 

@@ -19,12 +19,21 @@ type Props = {
   origin: { lon: number; lat: number } | null
   trails: GeoJSON.FeatureCollection
   particles: GeoJSON.FeatureCollection
+  variantTrails: GeoJSON.FeatureCollection
+  variantParticles: GeoJSON.FeatureCollection
   onMapClick: (lon: number, lat: number) => void
 }
 
 const EMPTY: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: [] }
 
-export function OceanMap({ origin, trails, particles, onMapClick }: Props) {
+export function OceanMap({
+  origin,
+  trails,
+  particles,
+  variantTrails,
+  variantParticles,
+  onMapClick,
+}: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const mapRef = useRef<Map | null>(null)
   const onClickRef = useRef(onMapClick)
@@ -53,17 +62,17 @@ export function OceanMap({ origin, trails, particles, onMapClick }: Props) {
     mapRef.current = map
 
     const ensureLayers = () => {
-      if (!map.getSource('origin')) {
-        map.addSource('origin', { type: 'geojson', data: EMPTY })
+      if (!map.getSource('variant-trails')) {
+        map.addSource('variant-trails', { type: 'geojson', data: EMPTY })
         map.addLayer({
-          id: 'origin-circle',
-          type: 'circle',
-          source: 'origin',
+          id: 'variant-trails-line',
+          type: 'line',
+          source: 'variant-trails',
           paint: {
-            'circle-radius': 8,
-            'circle-color': '#d9c4a5',
-            'circle-stroke-width': 2,
-            'circle-stroke-color': '#063849',
+            'line-color': '#e0b35a',
+            'line-width': 1.6,
+            'line-opacity': 0.8,
+            'line-dasharray': [1.2, 1.2],
           },
         })
       }
@@ -80,6 +89,20 @@ export function OceanMap({ origin, trails, particles, onMapClick }: Props) {
           },
         })
       }
+      if (!map.getSource('variant-particles')) {
+        map.addSource('variant-particles', { type: 'geojson', data: EMPTY })
+        map.addLayer({
+          id: 'variant-particles-circle',
+          type: 'circle',
+          source: 'variant-particles',
+          paint: {
+            'circle-radius': 3.2,
+            'circle-color': '#e0b35a',
+            'circle-stroke-width': 1,
+            'circle-stroke-color': '#5a3d0a',
+          },
+        })
+      }
       if (!map.getSource('particles')) {
         map.addSource('particles', { type: 'geojson', data: EMPTY })
         map.addLayer({
@@ -91,6 +114,20 @@ export function OceanMap({ origin, trails, particles, onMapClick }: Props) {
             'circle-color': '#f4fbff',
             'circle-stroke-width': 1,
             'circle-stroke-color': '#0d6e8a',
+          },
+        })
+      }
+      if (!map.getSource('origin')) {
+        map.addSource('origin', { type: 'geojson', data: EMPTY })
+        map.addLayer({
+          id: 'origin-circle',
+          type: 'circle',
+          source: 'origin',
+          paint: {
+            'circle-radius': 8,
+            'circle-color': '#d9c4a5',
+            'circle-stroke-width': 2,
+            'circle-stroke-color': '#063849',
           },
         })
       }
@@ -162,6 +199,24 @@ export function OceanMap({ origin, trails, particles, onMapClick }: Props) {
     const particleSource = map.getSource('particles') as GeoJSONSource | undefined
     particleSource?.setData(particles)
   }, [particles, status])
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || status !== 'ready') {
+      return
+    }
+    const source = map.getSource('variant-trails') as GeoJSONSource | undefined
+    source?.setData(variantTrails)
+  }, [variantTrails, status])
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || status !== 'ready') {
+      return
+    }
+    const source = map.getSource('variant-particles') as GeoJSONSource | undefined
+    source?.setData(variantParticles)
+  }, [variantParticles, status])
 
   return (
     <div className="map-frame" aria-busy={status === 'loading'}>
