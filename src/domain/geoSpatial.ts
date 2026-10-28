@@ -37,13 +37,6 @@ export function pointInPolygon(point: LonLat, polygon: GeoJSON.Polygon): boolean
   return true
 }
 
-export function planarDistanceM(a: LonLat, b: LonLat): number {
-  const midLat = (a.lat + b.lat) / 2
-  const east = (b.lon - a.lon) * metersPerDegLon(midLat)
-  const north = (b.lat - a.lat) * METERS_PER_DEG_LAT
-  return Math.hypot(east, north)
-}
-
 function distanceToSegmentM(point: LonLat, a: LonLat, b: LonLat): number {
   const midLat = (a.lat + b.lat + point.lat) / 3
   const ax = 0
