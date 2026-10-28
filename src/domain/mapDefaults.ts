@@ -1,3 +1,5 @@
+import type { LonLat } from './types.ts'
+
 /** Western Mediterranean focus for the OceanDrift MVP demo. */
 export const DEFAULT_MAP_CENTER: [number, number] = [3.0, 40.5]
 
@@ -9,3 +11,8 @@ export const DEFAULT_MAP_ZOOM = 5.2
  * after verifying licence and attribution requirements.
  */
 export const MAP_STYLE_URL = 'https://demotiles.maplibre.org/style.json'
+
+export function centerAsLonLat(): LonLat {
+  const [lon, lat] = DEFAULT_MAP_CENTER
+  return { lon, lat }
+}
