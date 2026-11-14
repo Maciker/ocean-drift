@@ -41,6 +41,7 @@ pnpm dev
 pnpm typecheck
 pnpm lint
 pnpm test
+pnpm test:e2e       # Playwright smoke on `pnpm build` + preview (see docs/hosting.md)
 pnpm build
 pnpm quality:fast      # typecheck + lint + test
 pnpm quality:full      # + arch, knip, jscpd, ratchet
